@@ -1,0 +1,19 @@
+{
+  "name": "bitcoin_inheritance_script",
+  "version": "0.0.1",
+  "description": "Bitcoin Inheritance Script",
+  "license": "MIT",
+  "author": {
+    "name": "JP",
+    "url": "https://github.com/jp93arg"
+  },
+  "dependencies": {
+    "bip65": "^1.0.3",
+    "bitcoinjs-lib": "^5.2.0",
+    "bitcointestwalletsgenerator": "^2.0.1",
+    "commander": "^8.3.0",
+    "ecpair": "^1.0.1",
+    "tslint": "^6.1.3",
+    "typescript": "^4.5.2"
+  }
+}
