@@ -14,4 +14,6 @@ const wallets = JSON.parse(fs.readFileSync('wallets.json', 'utf8'));
 const newWallets = {};
 newWallets.owner = wallets.alice;
 newWallets.inheritor = wallets.bob;
+newWallets.inheritorTwo = wallets.carol;
+newWallets.inheritorThree = wallets.dave;
 fs.writeFileSync('wallets.json', JSON.stringify(newWallets, null, 2));
