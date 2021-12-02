@@ -2,14 +2,14 @@
 # Bitcoin Inheritance Scripts
 
 This repository aims to demonstrate how easy is to program different use cases on bitcoin like inheritance, future backups, etc.
-Hopefully, this kind of setups will become easier and more user-friendly as different wallets implement it.
+Hopefully, this kind of setup will become easier and more user-friendly as different wallets implement it.
 
 Before getting into the scripts, I'll suggest getting familiar with the following concepts:
 1. Multisignature
 2. Time locked transactions
 3. Bitcoin Scripting Language (I would recommend this: https://www.youtube.com/watch?v=yU3Sr07Qnxg)
 
-In this first example, we'll create an address, who's balance could be spent by the owner at any point in time, or by the inheritor, after the specified time.
+In this first example, we'll create an address, whose balance could be spent by the owner at any point in time, or by the inheritor, after the specified time.
 This setup is also very useful to create future backups.
 
 ## What do we mean by "future backups"?
@@ -19,11 +19,11 @@ You could create this kind of setup and store the second seed phrase in a non-se
 But, what if someone opens the safe box and gets the second seed phrase? Well, the second seed phrase and their private key associated with it, it's not allowed (by the bitcoin consensus rules) to spend your utxo/money YET.
 
 What you should do is, if you still have access to your primary seed phrase/private key, create a new pair and move your funds there, before the second key gets activated. Then you can go to your bank and replace the old (and un-usable) second seed phrase with your new second seed phrase (which is not "activated" yet).
-If you loose access to the main seed phrase and you need to recover your funds, all you need to do is to go to the bank, get your second key and spend your funds after it gets activated (maybe you'll need to wait a couple of months... but isn't it better than loosing your funds?)
+If you lose access to the main seed phrase and you need to recover your funds, all you need to do is to go to the bank, get your second key and spend your funds after it gets activated (maybe you'll need to wait a couple of months... but isn't it better than losing your funds?)
 
 Let's say you do this operation once a year. Unfortunately, let's suppose you die. Someone from your family that has access to your bank safe box, could have access to the second seed phrase, wait until it gets "activated", and recover the funds. You can also create a transaction that spends the funds using the backup key, and give it to your relative. That transaction won't be valid until the time you specified in the timelock. And won't access the funds if you renew the configuration by creating a new pair, or spend your funds. You can give someone else future access to your money, but you're in full control of it at any point in time. You don't need to trust this person with your current private keys, and there is no risk to lose your funds.
 
-In this kind of setup there is no middle-man, no attorney needed. Programmable inheritance in the bitcoin network.
+In this kind of setup, there is no middle-man, no attorney needed. Programmable inheritance in the bitcoin network.
 
 # Example, evidence and How to run it:
 ## Clone the repo and install dependencies
@@ -38,7 +38,7 @@ In this kind of setup there is no middle-man, no attorney needed. Programmable i
 ## Creating and funding the Script:
 `node CreateInheritanceMultisigUTXO.js --locktime UNIX_TIMESTAMP_FOR_INHERITANCE_ACTIVATION`
 This will give you the address where you can send funds and the witness script you'll need to create the spending transaction.
-Open your favourite node interface and send some sats to the address. In this case, I'm using Bitcoin Core in regtest mode.
+Open your favorite node interface and send some sats to the address. In this case, I'm using Bitcoin Core in regtest mode.
 Bitcoin core returns the transaction ID, but we'll need some extra details, you'll have to run the getrawtransaction command:
 getrawtransaction TX_ID true
 
@@ -53,7 +53,7 @@ getrawtransaction TX_ID true
 In the spending cases we'll need the following parameters:
 _witness_: the value for this parameter is printed out when executing the CreateInheritanceMultisigUTXO script.
 _inputTxId_: the id returned by bitcoin core once we send funds using the sendtoaddress command suggested by the CreateInheritanceMultisigUTXO script output.
-_inputTxIndex_: Transactions in bitcoin have inputs and outputs (except the coinbase transactions at the begining of each block, those transactions only have the output defined, since there are new coins being generated). We'll need to identify the output from the funding transaction that can be spend by the owner/inheritor. (search for inputTxIndex, I pointed it in the transaction example where to find it.
+_inputTxIndex_: Transactions in bitcoin have inputs and outputs (except the coinbase transactions at the beginning of each block, those transactions only have the output defined, since there are new coins being generated). We'll need to identify the output from the funding transaction that can be spent by the owner/inheritor. (search for inputTxIndex, I pointed it in the transaction example where to find it.
 _txHex_: The funding transaction in hexadecimal. search for "txHex", I pointed out in the. example where to find it.
 _locktime_: The locktime we used in the CreateInheritanceMultisigUTXO script.
 _outputValue_: The bitcoin amount we want to get out of the funding transaction. We should leave something for the mining fees. For example, if the funding transaction created a 1.5 btc UTXO, we can take 1.5 minus fees.
@@ -196,7 +196,7 @@ Pero que pasaria si alguien tiene acceso a la caja de seguridad del banco y obti
 
 En un caso asi, lo que deberias hacer es: Si todavia tenes acceso a la clave primaria, deberias crear un nuevo par de claves, y mover los fondos a esa dirección, antes de que la segunda clave se "active". Luego, podrias ir al banco y reemplazar la antigua segunda clave (que ya no sirve para nada) por una nueva segunda clave (que aun no sirve para nada). Si perdes acceso al backup principal y necesitas recuperar acceso a los fondos, solo tendrias que ir al banco y obtener la segunda clave (al banco porque en este ejemplo usamos el banco, cada uno sabra donde dejar esta segunda clave) y usarla cuando llegue el momento. Quizas debas esperar unos minutos/horas/dias/meses hasta que esta segunda clave sea útil, pero es mejor eso que perder acceso a los fondos, no?
 
-Supongamos que realizas esta operacion de reemplazo de claves una vez al año. Lamentablemente, en algun momento te moris, pero alguien de tu familia que tenga acceso al a caja de seguridad del banco, podria acceder a la segunda clave, esperar a que se "active" y recuperar los fondos.
+Supongamos que realizas esta operacion de reemplazo de claves una vez al año. Lamentablemente, en algun momento te moris, pero alguien de tu familia que tenga acceso a la caja de seguridad del banco, podria acceder a la segunda clave, esperar a que se "active" y recuperar los fondos.
 
 Tambien podrias dejar creada una transaccion que gasta los fondos usando la clave de backup y dejar esta transaccion ya firmada a un familiar. La transacción no va a ser válida hasta que llegue el momento especificado o si los fondos son gastados previamente. Podrias dejarle a algún (o varios) ser querido tu herencia, sin dejar de tener control total de los fondos en todo momento (mientras estes vivo!) No necesitas confiar tus claves privadas y mucho menos tus bitcoin a terceros de confianza y mitigas los riesgos de perder los fondos.
 
