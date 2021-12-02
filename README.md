@@ -25,8 +25,23 @@ Let's say you do this operation once a year. Unfortunately, let's suppose you di
 
 In this kind of setup there is no middle-man, no attorney needed. Programmable inheritance in the bitcoin network.
 
-Example:
+# Example, evidence and How to run it:
+## Clone the repo and install dependencies
+`git clone https://github.com/jp93arg/InheritanceBitcoinScript.git`
+
+`cd InheritanceBitcoinScript`
+
+`npm install`
+## Creating the example wallets:
+`node CreateWallets.js`
+
 ## Creating and funding the Script:
+`node CreateInheritanceMultisigUTXO.js --locktime UNIX_TIMESTAMP_FOR_INHERITANCE_ACTIVATION`
+This will give you the address where you can send funds and the witness script you'll need to create the spending transaction.
+Open your favourite node interface and send some sats to the address. In this case, I'm using Bitcoin Core in regtest mode.
+Bitcoin core returns the transaction ID, but we'll need some extra details, you'll have to run the getrawtransaction command:
+getrawtransaction TX_ID true
+
 ![image](https://user-images.githubusercontent.com/33181203/144312327-95ff1fd0-e4d7-449d-8fe5-46f995c91398.png)
 
 ![image](https://user-images.githubusercontent.com/33181203/144312363-cf2f85ac-cb4b-4937-b06b-a7461eb1be6f.png)
@@ -35,7 +50,97 @@ Example:
 
 ![image](https://user-images.githubusercontent.com/33181203/144312468-dd9723e3-13b2-400c-a796-4692d49af999.png)
 
+In the spending cases we'll need the following parameters:
+_witness_: the value for this parameter is printed out when executing the CreateInheritanceMultisigUTXO script.
+_inputTxId_: the id returned by bitcoin core once we send funds using the sendtoaddress command suggested by the CreateInheritanceMultisigUTXO script output.
+_inputTxIndex_: Transactions in bitcoin have inputs and outputs (except the coinbase transactions at the begining of each block, those transactions only have the output defined, since there are new coins being generated). We'll need to identify the output from the funding transaction that can be spend by the owner/inheritor. (search for inputTxIndex, I pointed it in the transaction example where to find it.
+_txHex_: The funding transaction in hexadecimal. search for "txHex", I pointed out in the. example where to find it.
+_locktime_: The locktime we used in the CreateInheritanceMultisigUTXO script.
+_outputValue_: The bitcoin amount we want to get out of the funding transaction. We should leave something for the mining fees. For example, if the funding transaction created a 1.5 btc UTXO, we can take 1.5 minus fees.
+
+Example: 
+```sh
+
+￼
+sendtoaddress bcrt1qwdracye7xcsk5egjmxyz7pgz3066z0c39l5da2m6ky3vwtfgg22qt7p9a0 1.5
+￼
+861a8de380b73bc70b44ba6a32a3c3df3692f6469f0885dfec4dc4cb8e42bf2a
+￼
+getrawtransaction 861a8de380b73bc70b44ba6a32a3c3df3692f6469f0885dfec4dc4cb8e42bf2a true
+￼
+{
+  "txid": "861a8de380b73bc70b44ba6a32a3c3df3692f6469f0885dfec4dc4cb8e42bf2a",
+  "hash": "145dcd9e0fb20f590fc87d1cabaa70ebf0ea9e4a9c5547d25d2de5951690c02e",
+  "version": 2,
+  "size": 382,
+  "vsize": 220,
+  "weight": 880,
+  "locktime": 0,
+  "vin": [
+    {
+      "txid": "bf4bae2f1e74e74cf11272cfa657b264dc9d74abbbec408673378791c84f6bb2",
+      "vout": 1,
+      "scriptSig": {
+        "asm": "",
+        "hex": ""
+      },
+      "txinwitness": [
+        "3044022050e3982212a23e6644895895f3569d91cd0763e4d0424a316ca44f81b8c84a880220290d161c1eb540245eeaab8876044d71cf4edcf2df6a1e4f5b6b0853ea0d4f0e01",
+        "03b3238269dcab14f6ecad9ec2d6dc88181b7ff49a06de46af32e02fada39debd8"
+      ],
+      "sequence": 4294967294
+    },
+    {
+      "txid": "58a1cb577c6ff9f84af18bca447bc728fb70a67b809b36b18bb0b6b36a3735ea",
+      "vout": 1,
+      "scriptSig": {
+        "asm": "",
+        "hex": ""
+      },
+      "txinwitness": [
+        "30440220045d5920863576c0d88e18be9641aa23d74a8838b1c6428b229ce19f6716669b0220753c456d9b0875b10aade2184ffc40c1fc5b9cc1148ee25a2f3e7a41ff4de84201",
+        "0298c342b2652952b6e70a134e305122001ebf7e95db202c4303195190d21ef7b3"
+      ],
+      "sequence": 4294967294
+    }
+  ],
+  "vout": [
+    {
+      "value": 1.50000000,
+      "n": 0, // this is the inputTxIndex, because we sent 1.5 to this address: bcrt1qwdracye7xcsk5egjmxyz7pgz3066z0c39l5da2m6ky3vwtfgg22qt7p9a0
+      // The other output is the difference between the UTXO we used and the one we're creating. It's the transaction "change". It won't be the 0 position in the vout array always. We should not assume, sometimes it can be in a different array position.
+      "scriptPubKey": {
+        "asm": "0 7347dc133e36216a6512d9882f05028bf5a13f112fe8deab7ab122c72d284294",
+        "hex": "00207347dc133e36216a6512d9882f05028bf5a13f112fe8deab7ab122c72d284294",
+        "reqSigs": 1,
+        "type": "witness_v0_scripthash",
+        "addresses": [
+          "bcrt1qwdracye7xcsk5egjmxyz7pgz3066z0c39l5da2m6ky3vwtfgg22qt7p9a0"
+        ]
+      }
+    },
+    {
+      "value": 0.49999015,
+      "n": 1,
+      "scriptPubKey": {
+        "asm": "0 a9c9d5f3632081b14faf7d2a965e87a31c701218",
+        "hex": "0014a9c9d5f3632081b14faf7d2a965e87a31c701218",
+        "reqSigs": 1,
+        "type": "witness_v0_keyhash",
+        "addresses": [
+          "bcrt1q48yatumryzqmzna0054fvh585vw8qyscyaq6cz"
+        ]
+      }
+    }
+  ], // here we'll see the txHex
+  "hex": "02000000000102b26b4fc8918737738640ecbbab749ddc64b257a6cf7212f14ce7741e2fae4bbf0100000000feffffffea35376ab3b6b08bb1369b807ba670fb28c77b44ca8bf14af8f96f7c57cba1580100000000feffffff0280d1f008000000002200207347dc133e36216a6512d9882f05028bf5a13f112fe8deab7ab122c72d284294a7ecfa0200000000160014a9c9d5f3632081b14faf7d2a965e87a31c70121802473044022050e3982212a23e6644895895f3569d91cd0763e4d0424a316ca44f81b8c84a880220290d161c1eb540245eeaab8876044d71cf4edcf2df6a1e4f5b6b0853ea0d4f0e012103b3238269dcab14f6ecad9ec2d6dc88181b7ff49a06de46af32e02fada39debd8024730440220045d5920863576c0d88e18be9641aa23d74a8838b1c6428b229ce19f6716669b0220753c456d9b0875b10aade2184ffc40c1fc5b9cc1148ee25a2f3e7a41ff4de84201210298c342b2652952b6e70a134e305122001ebf7e95db202c4303195190d21ef7b300000000"
+}
+```
+
 ## Spending as the owner
+`node CreateTxSpendingAsOwner.js --witness witnessScript --inputTxId inputTransactionId --inputTxIndex inputTransactionIndex(our UTXO) --txHex txInHexadecimal --outputValue outputValueInBTC`
+
+
 ![image](https://user-images.githubusercontent.com/33181203/144312560-dc86f6e9-9d83-4193-8bde-59ff3224ee1b.png)
 
 ![image](https://user-images.githubusercontent.com/33181203/144312581-da1e96eb-f7bf-49ac-b085-d06c60b62e0c.png)
@@ -43,6 +148,9 @@ Example:
 ![image](https://user-images.githubusercontent.com/33181203/144312615-eb54400f-8c8b-4e66-ad2d-b8841775f4c8.png)
 
 ## Trying to spend with the second key before it gets activated
+
+`node CreateTxSpendingAsInheritor.js --witness witnessScript --inputTxId inputTransactionId --inputTxIndex inputTransactionIndex(our UTXO) --txHex txInHexadecimal --outputValue outputValueInBTC --locktime lockTimeInEpochSeconds`
+
 ![image](https://user-images.githubusercontent.com/33181203/144312698-bab016c6-2c51-4983-af49-ff1dc1379112.png)
 
 ![image](https://user-images.githubusercontent.com/33181203/144312720-e187c3a8-639e-4ff5-8dd6-5e64a776986e.png)
